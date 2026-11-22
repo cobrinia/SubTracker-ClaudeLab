@@ -126,9 +126,13 @@ if (app.Configuration.GetValue("Database:MigrateOnStartup", false))
 // ---------- Конвеєр обробки запиту ----------
 app.UseExceptionHandler();   // необроблені винятки → GlobalExceptionHandler → ProblemDetails
 app.UseStatusCodePages();    // тіло ProblemDetails для 401/403/404 без тіла
+// HTTPS-перенаправлення лише поза Development: під час 307-редиректу клієнти (Postman, браузер)
+// відкидають заголовок Authorization, і запит з токеном на http://localhost:5080 отримав би 401.
 if (!app.Environment.IsDevelopment())
+{
     app.UseHsts();
-app.UseHttpsRedirection();
+    app.UseHttpsRedirection();
+}
 
 app.UseAuthentication();
 app.UseAuthorization();
