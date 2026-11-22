@@ -1,0 +1,197 @@
+{
+  "realm": "subtracker",
+  "displayName": "SubTracker",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "accessTokenLifespan": 1800,
+  "ssoSessionIdleTimeout": 3600,
+  "roles": {
+    "realm": [
+      {
+        "name": "user",
+        "description": "Користувач SubTracker: власні підписки"
+      },
+      {
+        "name": "admin",
+        "description": "Адміністратор SubTracker: довідники та всі дані"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "subtracker-api",
+      "name": "SubTracker API (resource server)",
+      "enabled": true,
+      "bearerOnly": false,
+      "publicClient": false,
+      "secret": "not-used-resource-server",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "protocol": "openid-connect"
+    },
+    {
+      "clientId": "subtracker-client",
+      "name": "SubTracker — Scalar / Postman (public, PKCE)",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "protocol": "openid-connect",
+      "redirectUris": [
+        "https://oauth.pstmn.io/v1/callback",
+        "http://localhost:5080/*",
+        "https://localhost:7080/*"
+      ],
+      "webOrigins": [
+        "http://localhost:5080",
+        "https://localhost:7080"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "+"
+      },
+      "protocolMappers": [
+        {
+          "name": "audience subtracker-api",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "subtracker-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm roles → roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "subtracker-tests",
+      "name": "SubTracker — автоматичні тести та k6 (лише локально)",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "protocol": "openid-connect",
+      "protocolMappers": [
+        {
+          "name": "audience subtracker-api",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "subtracker-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm roles → roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "oleksandr",
+      "email": "o.kovalenko@example.com",
+      "firstName": "Олександр",
+      "lastName": "Коваленко",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Passw0rd!",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "user"
+      ]
+    },
+    {
+      "username": "maria",
+      "email": "m.kovalenko@example.com",
+      "firstName": "Марія",
+      "lastName": "Коваленко",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Passw0rd!",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "user"
+      ]
+    },
+    {
+      "username": "andriy",
+      "email": "a.shevchenko@example.com",
+      "firstName": "Андрій",
+      "lastName": "Шевченко",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Passw0rd!",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "user"
+      ]
+    },
+    {
+      "username": "admin",
+      "email": "admin@subtracker.local",
+      "firstName": "Адміністратор",
+      "lastName": "SubTracker",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Passw0rd!",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "admin",
+        "user"
+      ]
+    }
+  ]
+}

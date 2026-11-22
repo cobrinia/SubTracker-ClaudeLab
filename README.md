@@ -141,3 +141,37 @@ dotnet ef dbcontext scaffold "Server=(localdb)\MSSQLLocalDB;Database=SubTrackerD
 | 12 | Reverse engineering з `--no-onconfiguring` | `src/SubTracker.Scaffolded` |
 | 13 | SQL через ToQueryString і логування, перевірка N+1 | `Console/Demos/SqlDiagnosticsDemo.cs` |
 | 14 | Демонстрація | `Console/Demos/DemoMenu.cs` |
+
+---
+
+# Лабораторна робота № 3 — SubTracker API (ASP.NET Core Web API)
+
+REST API поверх шарів `Domain` і `DB` з ЛР № 2. Автентифікація — OpenID Connect через локальний
+**Keycloak** (JWT access token, Authorization Code + PKCE), авторизація — політики + resource-based
+обробники, документація — OpenAPI + Scalar, тести — xUnit (WebApplicationFactory), Postman, k6.
+
+```
+src/SubTracker.Api/
+├── Controllers/      Me, Categories, Subscriptions, PaymentMethods, Reports, Users, Diagnostics
+├── Contracts/        DTO: окремо для читання / створення / оновлення, параметри сторінок і фільтрів
+├── Mapping/          ApiMapper (Mapperly, source generator)
+├── Services/         сервісний шар за інтерфейсами (ICategoryService, ISubscriptionService, …)
+├── Security/         OIDC-налаштування, політики, обробники ресурсів, ICurrentUserService
+├── Validation/       FluentValidation-валідатори + глобальний фільтр
+├── Errors/           IExceptionHandler → ProblemDetails (RFC 9457)
+└── Infrastructure/   OpenAPI, OutputCache, наповнення БД для навантаження
+tests/SubTracker.Api.Tests/   інтеграційні тести API
+keycloak/realm-subtracker.json   realm, ролі user/admin, клієнти, тестові користувачі
+postman/                      колекція Postman
+loadtests/                    сценарій k6 і результати «до / після»
+```
+
+## Запуск
+
+1. `scripts\keycloak-start.cmd` — Keycloak на http://localhost:8080 (realm `subtracker`, імпорт з `keycloak/`).
+   Користувачі: `oleksandr`, `maria`, `andriy` (роль user), `admin` (admin + user), пароль `Passw0rd!`.
+2. Рядок підключення — у User Secrets (як у ЛР № 2), міграція `AddUserExternalId` застосовується під час старту в Development.
+3. `dotnet run --project src/SubTracker.Api --launch-profile http` → http://localhost:5080/scalar
+   (Authentication → OAuth2 → Authorize, клієнт `subtracker-client`, PKCE S256).
+4. Тести: `dotnet test` (окрема БД `SubTrackerDb_Tests`).
+5. Навантаження: `powershell -ExecutionPolicy Bypass -File scripts\loadtest.ps1` (потрібен k6, окрема БД `SubTrackerDb_Load`).

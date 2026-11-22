@@ -1,0 +1,182 @@
+{
+    "metrics": {
+        "http_req_sending": {
+            "med": 0,
+            "p(90)": 0,
+            "p(95)": 0,
+            "p(99)": 0.5063839999999996,
+            "max": 1.8293,
+            "avg": 0.007590404576801622,
+            "min": 0
+        },
+        "data_received": {
+            "rate": 2551631.599799008,
+            "count": 217287370
+        },
+        "iterations": {
+            "count": 17654,
+            "rate": 207.3130355567914
+        },
+        "data_sent": {
+            "rate": 1117991.2301137152,
+            "count": 95203937
+        },
+        "http_req_duration": {
+            "avg": 1.1837054321197416,
+            "min": 0,
+            "med": 0.5926,
+            "p(90)": 2.9473,
+            "p(95)": 3.6717,
+            "p(99)": 7.1305679999999905,
+            "max": 75.1531,
+            "thresholds": {
+                "p(95)<500": false
+            }
+        },
+        "http_req_waiting": {
+            "p(95)": 3.5214199999999996,
+            "p(99)": 6.8875,
+            "max": 73.6414,
+            "avg": 1.047575566789861,
+            "min": 0,
+            "med": 0.5335,
+            "p(90)": 2.65658
+        },
+        "vus_max": {
+            "value": 50,
+            "min": 50,
+            "max": 50
+        },
+        "vus": {
+            "value": 1,
+            "min": 1,
+            "max": 50
+        },
+        "http_req_receiving": {
+            "avg": 0.12853946075307635,
+            "min": 0,
+            "med": 0,
+            "p(90)": 0.5402,
+            "p(95)": 0.7327,
+            "p(99)": 1.0030679999999994,
+            "max": 4.2376
+        },
+        "checks": {
+            "passes": 70617,
+            "fails": 0,
+            "value": 1
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 70617,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "iteration_duration": {
+            "p(90)": 207.7898,
+            "p(95)": 210.34758,
+            "p(99)": 214.30210300000002,
+            "max": 229.6023,
+            "avg": 205.47884881613234,
+            "min": 201.1566,
+            "med": 204.86565000000002
+        },
+        "http_reqs": {
+            "rate": 829.2638853468867,
+            "count": 70617
+        },
+        "http_req_blocked": {
+            "med": 0,
+            "p(90)": 0,
+            "p(95)": 0,
+            "p(99)": 0,
+            "max": 13.2493,
+            "avg": 0.002580412648512398,
+            "min": 0
+        },
+        "http_req_duration{expected_response:true}": {
+            "p(95)": 3.6717,
+            "p(99)": 7.1305679999999905,
+            "max": 75.1531,
+            "avg": 1.1837054321197416,
+            "min": 0,
+            "med": 0.5926,
+            "p(90)": 2.9473
+        },
+        "http_req_tls_handshaking": {
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "p(90)": 0,
+            "p(95)": 0,
+            "p(99)": 0,
+            "max": 0
+        },
+        "http_req_connecting": {
+            "min": 0,
+            "med": 0,
+            "p(90)": 0,
+            "p(95)": 0,
+            "p(99)": 0,
+            "max": 1.3486,
+            "avg": 0.0005580001982525454
+        }
+    },
+    "setup_data": {
+        "token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJpM0JVaUd5VVRZSnRMUmNmeE5lMGYyUEhrNUllN0RiT2VtSm41a25vWmtzIn0.eyJleHAiOjE3OTUzNDY2MjIsImlhdCI6MTc5NTM0NDgyMiwianRpIjoib25ydHJvOmE4ZGVjZWNkLTg3OTktZjU4NS0yYWZiLWJiMTUwMzJiMzdhZCIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvc3VidHJhY2tlciIsImF1ZCI6InN1YnRyYWNrZXItYXBpIiwic3ViIjoiMjQ5MWM1MjEtYTI1Ny00YWMyLWFmYjgtMWJmYmM4ZDk4NjFmIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic3VidHJhY2tlci10ZXN0cyIsInNpZCI6InhqS21tTkk4YUxwLXhJOU9KTXQ2SUgyeSIsImFjciI6IjEiLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsidXNlciJdfSwic2NvcGUiOiJvcGVuaWQgZW1haWwgcHJvZmlsZSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJyb2xlcyI6WyJ1c2VyIl0sIm5hbWUiOiLQntC70LXQutGB0LDQvdC00YAg0JrQvtCy0LDQu9C10L3QutC-IiwicHJlZmVycmVkX3VzZXJuYW1lIjoib2xla3NhbmRyIiwiZ2l2ZW5fbmFtZSI6ItCe0LvQtdC60YHQsNC90LTRgCIsImZhbWlseV9uYW1lIjoi0JrQvtCy0LDQu9C10L3QutC-IiwiZW1haWwiOiJvLmtvdmFsZW5rb0BleGFtcGxlLmNvbSJ9.HR1DC-Ko9TityXwiAMggfxD3J9jc5AoOc-nj82yFF-B5fPu1bDTHL83bJHzXMF1Mkodn8sbPbPmoJtDMjeN09n-Ntl_vEZqVFG31WEK45lGFxV_qOnnZT70h-DPD594pVH280jZRLGi3qagNqbNwdy5-vtmltpqVDiL0UaTKTewMoK8m9iJD5bxSceq1vXg41W7HP5rJaLH1T9aedJy5tvmEpSPDBuvh6qM1Qgkuc5eZe_hZbfRr9LIeE1yMGWvSAmUxVyIUl5TXN_YCTIjGW6amTWgrmiSmFuFNln_xD-OBJj1e5BXSi-9JhzqL3GY2X0VliXhHYOdIyKg5jWrUfw"
+    },
+    "root_group": {
+        "checks": {
+            "список 200": {
+                "name": "список 200",
+                "path": "::список 200",
+                "id": "0638688066b35b70e41a9df18d8b310e",
+                "passes": 17654,
+                "fails": 0
+            },
+            "деталі 200": {
+                "path": "::деталі 200",
+                "id": "f95ac37e29880a57ec426c5e8e5045d7",
+                "passes": 17654,
+                "fails": 0,
+                "name": "деталі 200"
+            },
+            "підсумки 200": {
+                "path": "::підсумки 200",
+                "id": "397b00d463d4773c2773a7829a8422b2",
+                "passes": 17654,
+                "fails": 0,
+                "name": "підсумки 200"
+            },
+            "категорії 200": {
+                "fails": 0,
+                "name": "категорії 200",
+                "path": "::категорії 200",
+                "id": "e75e66b097ab2b764b56f0c335e00b6b",
+                "passes": 17654
+            }
+        },
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {
+            "setup": {
+                "checks": {
+                    "токен отримано": {
+                        "id": "b8c704a6fcf42f18dd55bc7389a851e5",
+                        "passes": 1,
+                        "fails": 0,
+                        "name": "токен отримано",
+                        "path": "::setup::токен отримано"
+                    }
+                },
+                "name": "setup",
+                "path": "::setup",
+                "id": "5c0f8025f7e0b6654089e5b00e950f1a",
+                "groups": {}
+            }
+        }
+    }
+}

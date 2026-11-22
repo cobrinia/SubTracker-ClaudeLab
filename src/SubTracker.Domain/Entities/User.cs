@@ -14,6 +14,13 @@ public class User
     /// <summary>Дата реєстрації (UTC).</summary>
     public DateTime CreatedAt { get; set; }
 
+    /// <summary>
+    /// Ідентифікатор користувача в постачальника OpenID Connect (claim «sub» з JWT).
+    /// null — користувач ще жодного разу не входив через Web API.
+    /// Додано в ЛР № 3 (міграція AddUserExternalId).
+    /// </summary>
+    public string? ExternalId { get; set; }
+
     // ---- Навігаційні властивості ----
 
     /// <summary>Способи оплати користувача (1 → *).</summary>

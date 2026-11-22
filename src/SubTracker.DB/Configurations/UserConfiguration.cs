@@ -31,6 +31,16 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .HasColumnType("datetime2(0)")
             .HasDefaultValueSql("SYSUTCDATETIME()");
 
+        // Зв'язок з обліковим записом OIDC: один «sub» — один користувач.
+        // Фільтр потрібен, бо в SQL Server унікальний індекс інакше допускав би лише один NULL.
+        builder.Property(u => u.ExternalId)
+            .HasMaxLength(64)
+            .IsUnicode(false);
+        builder.HasIndex(u => u.ExternalId)
+            .IsUnique()
+            .HasFilter("[ExternalId] IS NOT NULL")
+            .HasDatabaseName("UX_Users_ExternalId");
+
         // Головна таблиця заповнюється через HasData (потрапляє в міграцію).
         builder.HasData(SeedData.Users());
     }

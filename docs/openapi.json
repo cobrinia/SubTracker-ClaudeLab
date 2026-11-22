@@ -1,0 +1,3274 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "SubTracker API",
+    "description": "REST API менеджера підписок і регулярних платежів (варіант 10). Вхід — OpenID Connect (Keycloak), Authorization Code + PKCE. Ролі: user — власні підписки; admin — довідник категорій і всі дані.",
+    "contact": {
+      "name": "Кафедра ПЗ, НУ «Львівська політехніка»",
+      "url": "https://lpnu.ua"
+    },
+    "license": {
+      "name": "MIT"
+    },
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5080/"
+    }
+  ],
+  "paths": {
+    "/api/v1/categories": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Усі категорії з кількістю підписок у кожній.",
+        "operationId": "GetCategories",
+        "responses": {
+          "401": {
+            "description": "Немає або недійсний токен доступу.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "200": {
+            "description": "Список категорій, упорядкований за назвою.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Створити категорію (лише admin).",
+        "operationId": "CreateCategory",
+        "requestBody": {
+          "description": "Назва нової категорії.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategoryDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategoryDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "201": {
+            "description": "Категорію створено; заголовок Location містить її адресу.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некоректні дані.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "403": {
+            "description": "Потрібна роль admin.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "409": {
+            "description": "Категорія з такою назвою вже існує.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/categories/{id}": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Категорія за ідентифікатором.",
+        "operationId": "GetCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Ідентифікатор категорії.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "200": {
+            "description": "Категорія.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Категорію не знайдено.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Перейменувати категорію (лише admin). Ідемпотентно: повтор із тими самими даними дає той самий результат.",
+        "operationId": "UpdateCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Ідентифікатор категорії.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Нова назва.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCategoryDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCategoryDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "204": {
+            "description": "Зміни збережено.",
+            "content": {
+              "application/json": { }
+            }
+          },
+          "400": {
+            "description": "Некоректні дані.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "403": {
+            "description": "Потрібна роль admin.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "404": {
+            "description": "Категорію не знайдено.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "409": {
+            "description": "Категорія з такою назвою вже існує.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Видалити категорію (лише admin). Категорію з підписками видалити не можна.",
+        "operationId": "DeleteCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Ідентифікатор категорії.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "204": {
+            "description": "Категорію видалено.",
+            "content": {
+              "application/json": { }
+            }
+          },
+          "403": {
+            "description": "Потрібна роль admin.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "404": {
+            "description": "Категорію не знайдено.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "409": {
+            "description": "У категорії є підписки.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/diagnostics/error": {
+      "get": {
+        "tags": [
+          "Diagnostics"
+        ],
+        "summary": "Навмисно кидає необроблений виняток.",
+        "description": "У Development відповідь 500 містить текст винятку; у Production — лише загальне повідомлення і traceId,\r\nбез стеку викликів і внутрішніх деталей.",
+        "operationId": "ThrowError",
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Внутрішня помилка сервера (ProblemDetails).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "403": {
+            "description": "Потрібна роль admin.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/me": {
+      "get": {
+        "tags": [
+          "Me"
+        ],
+        "summary": "Хто я: користувач застосунку, пов'язаний з токеном (claim «sub»), і його ролі.",
+        "description": "Під час першого виклику користувача буде створено або прив'язано за e-mail (JIT-провізія).",
+        "operationId": "GetMe",
+        "responses": {
+          "401": {
+            "description": "Немає або недійсний токен доступу.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "200": {
+            "description": "Профіль користувача.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "У токені немає ролі user/admin.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/payment-methods": {
+      "get": {
+        "tags": [
+          "PaymentMethods"
+        ],
+        "summary": "Мої способи оплати.",
+        "operationId": "GetPaymentMethods",
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "200": {
+            "description": "Список способів оплати поточного користувача.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PaymentMethodDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "PaymentMethods"
+        ],
+        "summary": "Додати спосіб оплати. Для картки обов'язкові last4 і expiryDate.",
+        "operationId": "CreatePaymentMethod",
+        "requestBody": {
+          "description": "Дані способу оплати.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePaymentMethodDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePaymentMethodDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "201": {
+            "description": "Створено; Location — адреса ресурсу.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentMethodDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некоректні дані.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/payment-methods/{id}": {
+      "get": {
+        "tags": [
+          "PaymentMethods"
+        ],
+        "summary": "Спосіб оплати за ідентифікатором.",
+        "operationId": "GetPaymentMethod",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Ідентифікатор.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "200": {
+            "description": "Спосіб оплати.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentMethodDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Належить іншому користувачу.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "404": {
+            "description": "Не знайдено.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "PaymentMethods"
+        ],
+        "summary": "Оновити назву і термін дії (наприклад, після перевипуску картки). Ідемпотентно.",
+        "operationId": "UpdatePaymentMethod",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Ідентифікатор.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Нові значення.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePaymentMethodDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePaymentMethodDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "204": {
+            "description": "Збережено.",
+            "content": {
+              "application/json": { }
+            }
+          },
+          "400": {
+            "description": "Некоректні дані.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "403": {
+            "description": "Належить іншому користувачу.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "404": {
+            "description": "Не знайдено.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "PaymentMethods"
+        ],
+        "summary": "Видалити спосіб оплати, якщо з нього нічого не оплачується.",
+        "operationId": "DeletePaymentMethod",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Ідентифікатор.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "204": {
+            "description": "Видалено.",
+            "content": {
+              "application/json": { }
+            }
+          },
+          "403": {
+            "description": "Належить іншому користувачу.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "404": {
+            "description": "Не знайдено.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "409": {
+            "description": "Спосіб оплати використовується підписками або платежами.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/reports/calendar": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "summary": "Календар майбутніх списань за період (за замовчуванням — 30 днів від сьогодні).",
+        "operationId": "GetCalendar",
+        "parameters": [
+          {
+            "name": "From",
+            "in": "query",
+            "description": "Початок періоду (yyyy-MM-dd).",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "To",
+            "in": "query",
+            "description": "Кінець періоду (yyyy-MM-dd), не більше 366 днів від початку.",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "200": {
+            "description": "Списання, упорядковані за датою; IsReminderDue = true, якщо час нагадати.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UpcomingChargeDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Кінець раніше за початок або період довший за 366 днів.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/reports/totals": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "summary": "Підсумки активних підписок на місяць і рік — окремо за кожною валютою та з розбивкою за категоріями.",
+        "operationId": "GetTotals",
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "200": {
+            "description": "Підсумки за валютами.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CurrencyTotalsDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/subscriptions": {
+      "get": {
+        "tags": [
+          "Subscriptions"
+        ],
+        "summary": "Сторінка підписок з фільтрацією та сортуванням.",
+        "description": "Звичайний користувач бачить власні підписки і ті, де він учасник; admin — усі (або конкретного власника через ownerId).\r\nПриклад: `GET /api/v1/subscriptions?status=Active&amp;currency=UAH&amp;sortBy=Amount&amp;sortDir=Desc&amp;page=1&amp;pageSize=10`",
+        "operationId": "GetSubscriptions",
+        "parameters": [
+          {
+            "name": "Status",
+            "in": "query",
+            "description": "Фільтр за статусом.",
+            "schema": {
+              "$ref": "#/components/schemas/SubscriptionStatus"
+            }
+          },
+          {
+            "name": "CategoryId",
+            "in": "query",
+            "description": "Фільтр за категорією.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Currency",
+            "in": "query",
+            "description": "Фільтр за валютою (UAH, USD, EUR).",
+            "schema": {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            }
+          },
+          {
+            "name": "MinAmount",
+            "in": "query",
+            "description": "Мінімальна сума.",
+            "schema": {
+              "maximum": 1000000,
+              "minimum": 0,
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "MaxAmount",
+            "in": "query",
+            "description": "Максимальна сума.",
+            "schema": {
+              "maximum": 1000000,
+              "minimum": 0,
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "Search",
+            "in": "query",
+            "description": "Пошук за частиною назви.",
+            "schema": {
+              "maxLength": 100,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "SortBy",
+            "in": "query",
+            "description": "Поле сортування (за замовчуванням — дата наступного списання).",
+            "schema": {
+              "$ref": "#/components/schemas/SubscriptionSortField"
+            }
+          },
+          {
+            "name": "SortDir",
+            "in": "query",
+            "description": "Напрям сортування.",
+            "schema": {
+              "$ref": "#/components/schemas/SortDirection"
+            }
+          },
+          {
+            "name": "OwnerId",
+            "in": "query",
+            "description": "Лише для адміністратора: підписки конкретного власника.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Page",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "200": {
+            "description": "Сторінка підписок з метаданими (page, pageSize, totalCount, totalPages, hasNext, hasPrevious).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResponseOfSubscriptionDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некоректні параметри запиту (наприклад, pageSize &gt; 100 або maxAmount &lt; minAmount).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Subscriptions"
+        ],
+        "summary": "Створити підписку. Власником стає поточний користувач.",
+        "operationId": "CreateSubscription",
+        "requestBody": {
+          "description": "Дані нової підписки.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSubscriptionDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSubscriptionDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "201": {
+            "description": "Підписку створено; Location — адреса нового ресурсу.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некоректні дані (валідація DataAnnotations / FluentValidation).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "409": {
+            "description": "У користувача вже є підписка з такою назвою.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "422": {
+            "description": "Порушено бізнес-правило: категорії немає, спосіб оплати чужий або прострочений.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/subscriptions/{id}": {
+      "get": {
+        "tags": [
+          "Subscriptions"
+        ],
+        "summary": "Підписка з деталями: місячний і річний еквівалент, учасники спільної підписки.",
+        "operationId": "GetSubscription",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Ідентифікатор підписки.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "200": {
+            "description": "Підписка.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Підписка належить іншому користувачу.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "404": {
+            "description": "Підписку не знайдено.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Subscriptions"
+        ],
+        "summary": "Повністю замінити дані підписки (ідемпотентно).",
+        "operationId": "UpdateSubscription",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Ідентифікатор підписки.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Нові значення всіх змінюваних полів.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSubscriptionDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSubscriptionDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "204": {
+            "description": "Зміни збережено.",
+            "content": {
+              "application/json": { }
+            }
+          },
+          "400": {
+            "description": "Некоректні дані.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "403": {
+            "description": "Змінювати може лише власник або admin.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "404": {
+            "description": "Підписку не знайдено.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "409": {
+            "description": "Назва вже зайнята або дані змінив інший запит (RowVersion).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "422": {
+            "description": "Порушено бізнес-правило.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Subscriptions"
+        ],
+        "summary": "Видалити підписку разом з її платежами та учасниками.",
+        "description": "Ідемпотентно за станом сервера: повторний DELETE нічого не змінює і повертає 404.",
+        "operationId": "DeleteSubscription",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Ідентифікатор підписки.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "204": {
+            "description": "Підписку видалено.",
+            "content": {
+              "application/json": { }
+            }
+          },
+          "403": {
+            "description": "Видаляти може лише власник або admin.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "404": {
+            "description": "Підписку не знайдено (зокрема вже видалено).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/subscriptions/{id}/status": {
+      "patch": {
+        "tags": [
+          "Subscriptions"
+        ],
+        "summary": "Змінити статус: призупинити, відновити або скасувати.",
+        "description": "Повтор із тим самим статусом нічого не змінює (204). Скасовану підписку відновити не можна (409).",
+        "operationId": "ChangeSubscriptionStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Ідентифікатор підписки.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Новий статус.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeSubscriptionStatusDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeSubscriptionStatusDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "204": {
+            "description": "Статус змінено (або вже був таким).",
+            "content": {
+              "application/json": { }
+            }
+          },
+          "400": {
+            "description": "Невідомий статус.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "403": {
+            "description": "Змінювати може лише власник або admin.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "404": {
+            "description": "Підписку не знайдено.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "409": {
+            "description": "Підписку вже скасовано.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/subscriptions/{id}/charges": {
+      "post": {
+        "tags": [
+          "Subscriptions"
+        ],
+        "summary": "Провести списання: створює платіж і переносить дату наступного списання на один період.",
+        "operationId": "ChargeSubscription",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Ідентифікатор підписки.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "201": {
+            "description": "Платіж створено; Location — адреса платежу.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Списання проводить лише власник або admin.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "404": {
+            "description": "Підписку не знайдено.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "409": {
+            "description": "Підписка не активна (призупинена або скасована).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "422": {
+            "description": "Термін дії способу оплати минув.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/subscriptions/{id}/payments": {
+      "get": {
+        "tags": [
+          "Subscriptions"
+        ],
+        "summary": "Історія платежів підписки (від новіших до старіших).",
+        "operationId": "GetPayments",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Ідентифікатор підписки.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Page",
+            "in": "query",
+            "description": "Номер сторінки, починаючи з 1.",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "description": "Кількість елементів на сторінці (1–100).",
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "200": {
+            "description": "Сторінка платежів з метаданими.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResponseOfPaymentDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некоректні параметри сторінки.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "403": {
+            "description": "Немає доступу до підписки.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "404": {
+            "description": "Підписку не знайдено.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/subscriptions/{id}/payments/{paymentId}": {
+      "get": {
+        "tags": [
+          "Subscriptions"
+        ],
+        "summary": "Один платіж підписки.",
+        "operationId": "GetPayment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Ідентифікатор підписки.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "paymentId",
+            "in": "path",
+            "description": "Ідентифікатор платежу.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "200": {
+            "description": "Платіж.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Немає доступу до підписки.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "404": {
+            "description": "Підписку або платіж не знайдено.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Сторінка користувачів застосунку.",
+        "operationId": "GetUsers",
+        "parameters": [
+          {
+            "name": "Page",
+            "in": "query",
+            "description": "Номер сторінки, починаючи з 1.",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "description": "Кількість елементів на сторінці (1–100).",
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "200": {
+            "description": "Сторінка користувачів; IsLinked — чи пов'язаний обліковий запис з Keycloak.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResponseOfUserDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некоректні параметри сторінки.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "403": {
+            "description": "Потрібна роль admin.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BillingPeriod": {
+        "enum": [
+          "Weekly",
+          "Monthly",
+          "Quarterly",
+          "Yearly"
+        ]
+      },
+      "CategoryDto": {
+        "required": [
+          "id",
+          "name",
+          "subscriptionCount"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Ідентифікатор.",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "description": "Назва (унікальна)."
+          },
+          "subscriptionCount": {
+            "type": "integer",
+            "description": "Скільки підписок належить до категорії.",
+            "format": "int32"
+          }
+        },
+        "description": "Категорія для читання."
+      },
+      "CategoryTotalDto": {
+        "required": [
+          "categoryName",
+          "activeCount",
+          "monthlyTotal",
+          "yearlyTotal"
+        ],
+        "type": "object",
+        "properties": {
+          "categoryName": {
+            "type": "string",
+            "description": "Категорія."
+          },
+          "activeCount": {
+            "type": "integer",
+            "description": "Активних підписок.",
+            "format": "int32"
+          },
+          "monthlyTotal": {
+            "type": "number",
+            "description": "Сума на місяць.",
+            "format": "double"
+          },
+          "yearlyTotal": {
+            "type": "number",
+            "description": "Сума на рік.",
+            "format": "double"
+          }
+        },
+        "description": "Витрати в одній категорії."
+      },
+      "ChangeSubscriptionStatusDto": {
+        "required": [
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "Новий статус: Active, Paused або Cancelled.",
+                "$ref": "#/components/schemas/SubscriptionStatus"
+              }
+            ]
+          }
+        },
+        "description": "Зміна статусу підписки (PATCH)."
+      },
+      "CreateCategoryDto": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Назва категорії, 2–50 символів."
+          }
+        },
+        "description": "Дані для створення категорії."
+      },
+      "CreatePaymentMethodDto": {
+        "required": [
+          "type",
+          "title",
+          "last4",
+          "expiryDate"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Тип способу оплати.",
+            "$ref": "#/components/schemas/PaymentMethodType"
+          },
+          "title": {
+            "type": "string",
+            "description": "Назва, 2–100 символів."
+          },
+          "last4": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Останні 4 цифри (обов'язково для Card)."
+          },
+          "expiryDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Термін дії (обов'язковий для Card, не в минулому).",
+            "format": "date"
+          }
+        },
+        "description": "Дані для створення способу оплати."
+      },
+      "CreateSubscriptionDto": {
+        "required": [
+          "name",
+          "categoryId",
+          "paymentMethodId",
+          "amount",
+          "currency",
+          "period",
+          "nextChargeDate"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Назва сервісу, 2–100 символів; унікальна в межах власника."
+          },
+          "categoryId": {
+            "type": "integer",
+            "description": "Ідентифікатор існуючої категорії.",
+            "format": "int32"
+          },
+          "paymentMethodId": {
+            "type": "integer",
+            "description": "Ідентифікатор власного дійсного способу оплати.",
+            "format": "int32"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Сума одного списання, 0.01–1 000 000.",
+            "format": "double"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Код валюти ISO 4217 з трьох великих латинських літер."
+          },
+          "period": {
+            "description": "Періодичність: Weekly, Monthly, Quarterly, Yearly.",
+            "$ref": "#/components/schemas/BillingPeriod"
+          },
+          "nextChargeDate": {
+            "type": "string",
+            "description": "Дата наступного списання.",
+            "format": "date"
+          },
+          "endDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Дата завершення (не раніше за наступне списання) або null.",
+            "format": "date"
+          },
+          "trialEndDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Кінець пробного періоду або null.",
+            "format": "date"
+          },
+          "remindDaysBefore": {
+            "type": "integer",
+            "description": "За скільки днів нагадувати, 0–30.",
+            "format": "int32",
+            "default": 3
+          }
+        },
+        "description": "Дані для створення підписки (POST)."
+      },
+      "CurrencyTotalsDto": {
+        "required": [
+          "currency",
+          "activeCount",
+          "monthlyTotal",
+          "yearlyTotal",
+          "byCategory"
+        ],
+        "type": "object",
+        "properties": {
+          "currency": {
+            "type": "string",
+            "description": "Валюта."
+          },
+          "activeCount": {
+            "type": "integer",
+            "description": "Активних підписок.",
+            "format": "int32"
+          },
+          "monthlyTotal": {
+            "type": "number",
+            "description": "Сума на місяць.",
+            "format": "double"
+          },
+          "yearlyTotal": {
+            "type": "number",
+            "description": "Сума на рік.",
+            "format": "double"
+          },
+          "byCategory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryTotalDto"
+            },
+            "description": "Розбивка за категоріями."
+          }
+        },
+        "description": "Загальні витрати в одній валюті."
+      },
+      "MeDto": {
+        "required": [
+          "id",
+          "name",
+          "email",
+          "externalId",
+          "roles"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Ідентифікатор у БД.",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "description": "Ім'я."
+          },
+          "email": {
+            "type": "string",
+            "description": "E-mail."
+          },
+          "externalId": {
+            "type": "string",
+            "description": "Ідентифікатор у постачальника OIDC (claim sub)."
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Ролі з маркера доступу."
+          }
+        },
+        "description": "Профіль поточного користувача."
+      },
+      "PagedResponseOfPaymentDto": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentDto"
+            },
+            "description": "Елементи поточної сторінки."
+          },
+          "page": {
+            "type": "integer",
+            "description": "Номер поточної сторінки.",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Розмір сторінки.",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Загальна кількість елементів, що відповідають фільтру.",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "description": "Загальна кількість сторінок.",
+            "format": "int32"
+          },
+          "hasPrevious": {
+            "type": "boolean",
+            "description": "Чи існує попередня сторінка."
+          },
+          "hasNext": {
+            "type": "boolean",
+            "description": "Чи існує наступна сторінка."
+          }
+        },
+        "description": "Сторінка колекції разом із метаданими пагінації."
+      },
+      "PagedResponseOfSubscriptionDto": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SubscriptionDto"
+            },
+            "description": "Елементи поточної сторінки."
+          },
+          "page": {
+            "type": "integer",
+            "description": "Номер поточної сторінки.",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Розмір сторінки.",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Загальна кількість елементів, що відповідають фільтру.",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "description": "Загальна кількість сторінок.",
+            "format": "int32"
+          },
+          "hasPrevious": {
+            "type": "boolean",
+            "description": "Чи існує попередня сторінка."
+          },
+          "hasNext": {
+            "type": "boolean",
+            "description": "Чи існує наступна сторінка."
+          }
+        },
+        "description": "Сторінка колекції разом із метаданими пагінації."
+      },
+      "PagedResponseOfUserDto": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserDto"
+            },
+            "description": "Елементи поточної сторінки."
+          },
+          "page": {
+            "type": "integer",
+            "description": "Номер поточної сторінки.",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Розмір сторінки.",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Загальна кількість елементів, що відповідають фільтру.",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "description": "Загальна кількість сторінок.",
+            "format": "int32"
+          },
+          "hasPrevious": {
+            "type": "boolean",
+            "description": "Чи існує попередня сторінка."
+          },
+          "hasNext": {
+            "type": "boolean",
+            "description": "Чи існує наступна сторінка."
+          }
+        },
+        "description": "Сторінка колекції разом із метаданими пагінації."
+      },
+      "PaymentDto": {
+        "required": [
+          "id",
+          "subscriptionId",
+          "paymentMethodId",
+          "chargedAt",
+          "amount",
+          "currency",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Ідентифікатор.",
+            "format": "int32"
+          },
+          "subscriptionId": {
+            "type": "integer",
+            "description": "Підписка.",
+            "format": "int32"
+          },
+          "paymentMethodId": {
+            "type": "integer",
+            "description": "Спосіб оплати.",
+            "format": "int32"
+          },
+          "chargedAt": {
+            "type": "string",
+            "description": "Момент списання (UTC).",
+            "format": "date-time"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Сума.",
+            "format": "double"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Валюта."
+          },
+          "status": {
+            "description": "Результат: Succeeded, Failed, Refunded.",
+            "$ref": "#/components/schemas/PaymentStatus"
+          }
+        },
+        "description": "Платіж (факт списання)."
+      },
+      "PaymentMethodDto": {
+        "required": [
+          "id",
+          "type",
+          "title",
+          "last4",
+          "expiryDate",
+          "lastUsedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Ідентифікатор.",
+            "format": "int32"
+          },
+          "type": {
+            "description": "Тип: Card, PayPal, BankTransfer, GooglePay, ApplePay.",
+            "$ref": "#/components/schemas/PaymentMethodType"
+          },
+          "title": {
+            "type": "string",
+            "description": "Назва, зрозуміла користувачу."
+          },
+          "last4": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Останні 4 цифри картки."
+          },
+          "expiryDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Термін дії.",
+            "format": "date"
+          },
+          "lastUsedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Коли використовувався востаннє (UTC).",
+            "format": "date-time"
+          }
+        },
+        "description": "Спосіб оплати для читання."
+      },
+      "PaymentMethodType": {
+        "enum": [
+          "Card",
+          "PayPal",
+          "BankTransfer",
+          "GooglePay",
+          "ApplePay"
+        ]
+      },
+      "PaymentStatus": {
+        "enum": [
+          "Succeeded",
+          "Failed",
+          "Refunded"
+        ]
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "detail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "instance": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "SortDirection": {
+        "enum": [
+          "Asc",
+          "Desc"
+        ],
+        "description": "Напрям сортування."
+      },
+      "SubscriptionDetailsDto": {
+        "required": [
+          "subscription",
+          "monthlyAmount",
+          "yearlyAmount",
+          "members"
+        ],
+        "type": "object",
+        "properties": {
+          "subscription": {
+            "description": "Основні дані підписки.",
+            "$ref": "#/components/schemas/SubscriptionDto"
+          },
+          "monthlyAmount": {
+            "type": "number",
+            "description": "Еквівалент суми за місяць.",
+            "format": "double"
+          },
+          "yearlyAmount": {
+            "type": "number",
+            "description": "Еквівалент суми за рік.",
+            "format": "double"
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SubscriptionMemberDto"
+            },
+            "description": "Учасники спільної підписки (порожньо для індивідуальної)."
+          }
+        },
+        "description": "Повні відомості про підписку (GET за Id)."
+      },
+      "SubscriptionDto": {
+        "required": [
+          "id",
+          "name",
+          "categoryId",
+          "categoryName",
+          "paymentMethodId",
+          "paymentMethodTitle",
+          "ownerId",
+          "ownerName",
+          "amount",
+          "currency",
+          "period",
+          "nextChargeDate",
+          "endDate",
+          "trialEndDate",
+          "status",
+          "remindDaysBefore"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Ідентифікатор.",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "description": "Назва сервісу або платежу."
+          },
+          "categoryId": {
+            "type": "integer",
+            "description": "Ідентифікатор категорії.",
+            "format": "int32"
+          },
+          "categoryName": {
+            "type": "string",
+            "description": "Назва категорії."
+          },
+          "paymentMethodId": {
+            "type": "integer",
+            "description": "Ідентифікатор способу оплати.",
+            "format": "int32"
+          },
+          "paymentMethodTitle": {
+            "type": "string",
+            "description": "Назва способу оплати."
+          },
+          "ownerId": {
+            "type": "integer",
+            "description": "Ідентифікатор власника.",
+            "format": "int32"
+          },
+          "ownerName": {
+            "type": "string",
+            "description": "Ім'я власника."
+          },
+          "amount": {
+            "type": "number",
+            "description": "Сума одного списання.",
+            "format": "double"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Код валюти ISO 4217."
+          },
+          "period": {
+            "description": "Періодичність списання.",
+            "$ref": "#/components/schemas/BillingPeriod"
+          },
+          "nextChargeDate": {
+            "type": "string",
+            "description": "Дата наступного списання.",
+            "format": "date"
+          },
+          "endDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Дата завершення або null.",
+            "format": "date"
+          },
+          "trialEndDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Кінець пробного періоду або null.",
+            "format": "date"
+          },
+          "status": {
+            "description": "Статус підписки.",
+            "$ref": "#/components/schemas/SubscriptionStatus"
+          },
+          "remindDaysBefore": {
+            "type": "integer",
+            "description": "За скільки днів нагадувати.",
+            "format": "int32"
+          }
+        },
+        "description": "Підписка для читання (у списках і як результат створення)."
+      },
+      "SubscriptionMemberDto": {
+        "required": [
+          "userId",
+          "userName",
+          "sharePercent"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "description": "Ідентифікатор користувача.",
+            "format": "int32"
+          },
+          "userName": {
+            "type": "string",
+            "description": "Ім'я користувача."
+          },
+          "sharePercent": {
+            "type": "number",
+            "description": "Частка оплати, %.",
+            "format": "double"
+          }
+        },
+        "description": "Учасник спільної підписки."
+      },
+      "SubscriptionSortField": {
+        "enum": [
+          "NextChargeDate",
+          "Amount",
+          "Name"
+        ],
+        "description": "Поле сортування списку підписок."
+      },
+      "SubscriptionStatus": {
+        "enum": [
+          "Active",
+          "Paused",
+          "Cancelled"
+        ]
+      },
+      "UpcomingChargeDto": {
+        "required": [
+          "date",
+          "subscriptionId",
+          "subscriptionName",
+          "paymentMethodTitle",
+          "amount",
+          "currency",
+          "isReminderDue"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "Дата списання.",
+            "format": "date"
+          },
+          "subscriptionId": {
+            "type": "integer",
+            "description": "Підписка.",
+            "format": "int32"
+          },
+          "subscriptionName": {
+            "type": "string",
+            "description": "Назва підписки."
+          },
+          "paymentMethodTitle": {
+            "type": "string",
+            "description": "З якого способу оплати."
+          },
+          "amount": {
+            "type": "number",
+            "description": "Сума.",
+            "format": "double"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Валюта."
+          },
+          "isReminderDue": {
+            "type": "boolean",
+            "description": "Чи настав час нагадування (до списання ≤ RemindDaysBefore днів)."
+          }
+        },
+        "description": "Одна подія календаря: конкретне майбутнє списання."
+      },
+      "UpdateCategoryDto": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Нова назва категорії, 2–50 символів."
+          }
+        },
+        "description": "Дані для повної заміни категорії (PUT)."
+      },
+      "UpdatePaymentMethodDto": {
+        "required": [
+          "title",
+          "expiryDate"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Нова назва, 2–100 символів."
+          },
+          "expiryDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Новий термін дії.",
+            "format": "date"
+          }
+        },
+        "description": "Дані для повної заміни способу оплати (перевипуск картки)."
+      },
+      "UpdateSubscriptionDto": {
+        "required": [
+          "name",
+          "categoryId",
+          "paymentMethodId",
+          "amount",
+          "currency",
+          "period",
+          "nextChargeDate",
+          "endDate",
+          "trialEndDate",
+          "remindDaysBefore"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Назва сервісу, 2–100 символів."
+          },
+          "categoryId": {
+            "type": "integer",
+            "description": "Ідентифікатор категорії.",
+            "format": "int32"
+          },
+          "paymentMethodId": {
+            "type": "integer",
+            "description": "Ідентифікатор способу оплати.",
+            "format": "int32"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Сума одного списання.",
+            "format": "double"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Код валюти ISO 4217."
+          },
+          "period": {
+            "description": "Періодичність списання.",
+            "$ref": "#/components/schemas/BillingPeriod"
+          },
+          "nextChargeDate": {
+            "type": "string",
+            "description": "Дата наступного списання.",
+            "format": "date"
+          },
+          "endDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Дата завершення або null.",
+            "format": "date"
+          },
+          "trialEndDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Кінець пробного періоду або null.",
+            "format": "date"
+          },
+          "remindDaysBefore": {
+            "type": "integer",
+            "description": "За скільки днів нагадувати, 0–30.",
+            "format": "int32"
+          }
+        },
+        "description": "Дані для повної заміни підписки (PUT). Статус змінюється окремо (PATCH .../status)."
+      },
+      "UserDto": {
+        "required": [
+          "id",
+          "name",
+          "email",
+          "isLinked",
+          "subscriptionCount",
+          "createdAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Ідентифікатор.",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "description": "Ім'я."
+          },
+          "email": {
+            "type": "string",
+            "description": "E-mail."
+          },
+          "isLinked": {
+            "type": "boolean",
+            "description": "Чи входив користувач через OIDC."
+          },
+          "subscriptionCount": {
+            "type": "integer",
+            "description": "Кількість власних підписок.",
+            "format": "int32"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Дата реєстрації (UTC).",
+            "format": "date-time"
+          }
+        },
+        "description": "Користувач у списку адміністратора."
+      },
+      "ValidationProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "detail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "instance": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "OAuth2": {
+        "type": "oauth2",
+        "description": "Keycloak realm «subtracker»: Authorization Code + PKCE (S256).",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "http://localhost:8080/realms/subtracker/protocol/openid-connect/auth",
+            "tokenUrl": "http://localhost:8080/realms/subtracker/protocol/openid-connect/token",
+            "scopes": {
+              "openid": "Ідентифікація користувача (OIDC)",
+              "profile": "Ім'я користувача",
+              "email": "E-mail користувача"
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Categories"
+    },
+    {
+      "name": "Diagnostics"
+    },
+    {
+      "name": "Me"
+    },
+    {
+      "name": "PaymentMethods"
+    },
+    {
+      "name": "Reports"
+    },
+    {
+      "name": "Subscriptions"
+    },
+    {
+      "name": "Users"
+    }
+  ]
+}

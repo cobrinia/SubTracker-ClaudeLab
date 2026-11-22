@@ -311,6 +311,11 @@ namespace SubTracker.DB.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("ExternalId")
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(64)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -321,6 +326,11 @@ namespace SubTracker.DB.Migrations
                     b.HasIndex("Email")
                         .IsUnique()
                         .HasDatabaseName("UX_Users_Email");
+
+                    b.HasIndex("ExternalId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Users_ExternalId")
+                        .HasFilter("[ExternalId] IS NOT NULL");
 
                     b.ToTable("Users", (string)null);
 

@@ -1,0 +1,32 @@
+# Швидка перевірка з Visual Studio / Rider. Токен: Postman (OAuth2 PKCE) або запит нижче (лише локально).
+@api = http://localhost:5080/api/v1
+@kc = http://localhost:8080/realms/subtracker/protocol/openid-connect
+
+### Токен (тестовий клієнт subtracker-tests, password grant — тільки для локальної розробки)
+# @name login
+POST {{kc}}/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&client_id=subtracker-tests&username=oleksandr&password=Passw0rd!&scope=openid
+
+###
+@token = {{login.response.body.access_token}}
+
+### Хто я
+GET {{api}}/me
+Authorization: Bearer {{token}}
+
+### Підписки: фільтр + сортування + сторінка
+GET {{api}}/subscriptions?status=Active&sortBy=Amount&sortDir=Desc&page=1&pageSize=5
+Authorization: Bearer {{token}}
+
+### Некоректні дані → 400
+POST {{api}}/subscriptions
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "name": "X", "categoryId": 1, "paymentMethodId": 1, "amount": -5, "currency": "uah",
+  "period": "Monthly", "nextChargeDate": "2026-12-01", "remindDaysBefore": 90 }
+
+### Без токена → 401
+GET {{api}}/subscriptions
