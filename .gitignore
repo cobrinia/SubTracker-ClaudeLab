@@ -363,3 +363,7 @@ MigrationBackup/
 FodyWeavers.xsd
 # ЛР 3: локальний Keycloak, завантажений скриптом
 tools/
+
+# Claude Code — особисті файли
+CLAUDE.local.md
+.claude/settings.local.json

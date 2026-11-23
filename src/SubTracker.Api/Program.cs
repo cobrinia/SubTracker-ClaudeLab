@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using Serilog;
+using Serilog.Events;
 using SubTracker.Api.Errors;
 using SubTracker.Api.Infrastructure;
 using SubTracker.Api.Mapping;
@@ -14,6 +16,24 @@ using SubTracker.Api.Validation;
 using SubTracker.DB;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ---------- Логування: Serilog → консоль + файли logs/api-<дата>.log ----------
+// Файли читає Claude (скіл log-diagnostics, агент log-investigator). У тестах (Testing) файл не пишеться.
+builder.Host.UseSerilog((ctx, cfg) =>
+{
+    cfg.MinimumLevel.Information()
+       .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+       .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
+       .Enrich.FromLogContext()
+       .WriteTo.Console();
+    if (!ctx.HostingEnvironment.IsEnvironment("Testing"))
+        cfg.WriteTo.File(
+            Path.Combine(ctx.HostingEnvironment.ContentRootPath, "logs", "api-.log"),
+            rollingInterval: RollingInterval.Day,
+            retainedFileCountLimit: 7,
+            shared: true,
+            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {SourceContext}: {Message:lj}{NewLine}{Exception}");
+});
 
 // Рядок підключення зберігається в User Secrets (той самий UserSecretsId, що й у консольного застосунку ЛР № 2).
 // У Development секрети підключаються автоматично; для профілю production-local — тут. Змінні середовища
@@ -125,6 +145,7 @@ if (app.Configuration.GetValue("Database:MigrateOnStartup", false))
 
 // ---------- Конвеєр обробки запиту ----------
 app.UseExceptionHandler();   // необроблені винятки → GlobalExceptionHandler → ProblemDetails
+app.UseSerilogRequestLogging(); // один рядок на запит: метод, шлях, код, час
 app.UseStatusCodePages();    // тіло ProblemDetails для 401/403/404 без тіла
 // HTTPS-перенаправлення лише поза Development: під час 307-редиректу клієнти (Postman, браузер)
 // відкидають заголовок Authorization, і запит з токеном на http://localhost:5080 отримав би 401.

@@ -23,11 +23,25 @@ dotnet test tests\SubTracker.Api.Tests
 ```
 Console і Api мають однаковий UserSecretsId, тому секрет задається один раз.
 
-## Новий репозиторій на GitHub
-```cmd
-gh repo create cobrinia/SubTracker-ClaudeLab --private --source=. --remote=origin --push
+## Новий репозиторій на GitHub (без gh CLI)
+1. https://github.com/new → Repository name `SubTracker-ClaudeLab`, Private, **без** README/.gitignore/license → Create.
+2. У PowerShell **з цієї папки** (не з ..\SubTracker!):
+```powershell
+cd C:\POLITEH\KPZ\SubTracker-ClaudeLab
+git remote add origin https://github.com/cobrinia/SubTracker-ClaudeLab.git
+git push -u origin main
 git push origin --tags
 ```
-(або створити порожній репозиторій на github.com і: `git remote add origin https://github.com/cobrinia/SubTracker-ClaudeLab.git` → `git push -u origin main --tags`)
+3. Settings → Collaborators → Add people — другий учасник.
+
+(Або встановити GitHub CLI: `winget install GitHub.cli`, перезапустити термінал, `gh auth login`, далі
+`gh repo create cobrinia/SubTracker-ClaudeLab --private --source=. --remote=origin --push`.)
+
+## Що вже налаштовано для Claude
+- CLAUDE.md — інструкції проєкту; .claude/settings.json — дозволи (Migrations/ заборонено редагувати вручну).
+- Скіли: ef-migrations, log-diagnostics, git-safe-sync, keycloak-auth.
+- Агенти: log-investigator (лише читає), merge-resolver.
+- Команди: /sync, /migration.
+- Serilog: src\SubTracker.Api\logs\api-<дата>.log.
 
 Keycloak одночасно з оригіналом не запускати — обидва на порту 8080.
