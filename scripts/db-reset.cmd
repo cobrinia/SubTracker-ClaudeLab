@@ -1,5 +1,5 @@
 @echo off
-rem Видаляє БД SubTrackerDb і створює її заново з усіх міграцій (з тестовими даними).
+rem Видаляє БД SubTrackerLabDb (з user secrets) і створює її заново з усіх міграцій (з тестовими даними).
 chcp 65001 >nul
 cd /d "%~dp0.."
 set EF=--project src\SubTracker.DB --startup-project src\SubTracker.Console

@@ -14,7 +14,7 @@ $api = Join-Path $root 'src\SubTracker.Api'
 $results = Join-Path $root 'loadtests\results'
 New-Item -ItemType Directory -Force $results | Out-Null
 
-$env:ConnectionStrings__SubTrackerDb = 'Server=(localdb)\MSSQLLocalDB;Database=SubTrackerDb_Load;Trusted_Connection=True;TrustServerCertificate=True'
+$env:ConnectionStrings__SubTrackerDb = 'Server=(localdb)\MSSQLLocalDB;Database=SubTrackerLabDb_Load;Trusted_Connection=True;TrustServerCertificate=True'
 $env:ASPNETCORE_ENVIRONMENT = 'Production'
 $env:Oidc__RequireHttpsMetadata = 'false'
 $env:ASPNETCORE_URLS = 'http://localhost:5080'

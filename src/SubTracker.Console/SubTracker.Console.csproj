@@ -11,7 +11,7 @@
     <Nullable>enable</Nullable>
     <!-- Простір імен ConsoleApp, а не Console: інакше SubTracker.Console «перекриє» System.Console. -->
     <RootNamespace>SubTracker.ConsoleApp</RootNamespace>
-    <UserSecretsId>825e9d5f-16cf-49a3-9adf-9e2fead991c3</UserSecretsId>
+    <UserSecretsId>c2cfcb5b-812c-4896-9d4c-92885baf4327</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

@@ -21,7 +21,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     public static readonly string ConnectionString =
         Environment.GetEnvironmentVariable("SUBTRACKER_TEST_DB")
-        ?? @"Server=(localdb)\MSSQLLocalDB;Database=SubTrackerDb_Tests;Trusted_Connection=True;TrustServerCertificate=True";
+        ?? @"Server=(localdb)\MSSQLLocalDB;Database=SubTrackerLabDb_Tests;Trusted_Connection=True;TrustServerCertificate=True";
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {

@@ -12,7 +12,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591;1573;AV0029;AV0030</NoWarn>
     <!-- Ті самі user secrets, що й у SubTracker.Console: один рядок підключення для обох застосунків. -->
-    <UserSecretsId>825e9d5f-16cf-49a3-9adf-9e2fead991c3</UserSecretsId>
+    <UserSecretsId>c2cfcb5b-812c-4896-9d4c-92885baf4327</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

@@ -9,7 +9,7 @@ rem ===================================================================
 setlocal
 set KC_VERSION=26.8.2
 set ROOT=%~dp0..
-set TOOLS=%ROOT%\tools
+set TOOLS=%ROOT%\..\SubTracker\tools
 set KC_HOME=%TOOLS%\keycloak-%KC_VERSION%
 
 where java >nul 2>nul
