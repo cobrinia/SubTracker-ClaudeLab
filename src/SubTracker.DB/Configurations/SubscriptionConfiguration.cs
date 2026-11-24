@@ -59,6 +59,11 @@ public sealed class SubscriptionConfiguration : IEntityTypeConfiguration<Subscri
         builder.Property(s => s.Notes)
             .HasMaxLength(500);
 
+        // Спільна підписка: bit NOT NULL DEFAULT 0 (міграція AddIsShared).
+        // DEFAULT потрібен і для INSERT з ADO.NET, де цей стовпець не вказано.
+        builder.Property(s => s.IsShared)
+            .HasDefaultValue(false);
+
         // Concurrency token: SQL Server сам змінює rowversion при кожному UPDATE,
         // а EF Core додає його у WHERE під час UPDATE/DELETE.
         builder.Property(s => s.RowVersion)
