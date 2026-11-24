@@ -21,6 +21,7 @@ namespace SubTracker.Api.Contracts;
 /// <param name="Status">Статус підписки.</param>
 /// <param name="RemindDaysBefore">За скільки днів нагадувати.</param>
 /// <param name="Notes">Нотатка до 500 символів або null.</param>
+/// <param name="IsShared">Чи є підписка спільною.</param>
 /// <param name="MonthlyLimit">Місячний ліміт витрат у валюті підписки або null.</param>
 public sealed record SubscriptionDto(
     int Id,
@@ -40,6 +41,7 @@ public sealed record SubscriptionDto(
     SubscriptionStatus Status,
     int RemindDaysBefore,
     string? Notes,
+    bool IsShared,
     decimal? MonthlyLimit);
 
 /// <summary>Учасник спільної підписки.</summary>
@@ -71,6 +73,7 @@ public sealed record SubscriptionDetailsDto(
 /// <param name="TrialEndDate">Кінець пробного періоду або null.</param>
 /// <param name="RemindDaysBefore">За скільки днів нагадувати, 0–30.</param>
 /// <param name="Notes">Нотатка до 500 символів або null.</param>
+/// <param name="IsShared">Чи є підписка спільною.</param>
 /// <param name="MonthlyLimit">Місячний ліміт витрат у валюті підписки або null.</param>
 public sealed record CreateSubscriptionDto(
     [Required(ErrorMessage = "Назва є обов'язковою.")]
@@ -94,6 +97,7 @@ public sealed record CreateSubscriptionDto(
     int RemindDaysBefore = 3,
     [StringLength(500, ErrorMessage = "Нотатка — не більше 500 символів.")]
     string? Notes = null,
+    bool IsShared = false,
     [Range(typeof(decimal), "0.01", "1000000", ParseLimitsInInvariantCulture = true, ConvertValueInInvariantCulture = true,
         ErrorMessage = "Місячний ліміт має бути від 0.01 до 1 000 000.")]
     decimal? MonthlyLimit = null);
@@ -110,6 +114,7 @@ public sealed record CreateSubscriptionDto(
 /// <param name="TrialEndDate">Кінець пробного періоду або null.</param>
 /// <param name="RemindDaysBefore">За скільки днів нагадувати, 0–30.</param>
 /// <param name="Notes">Нотатка до 500 символів або null.</param>
+/// <param name="IsShared">Чи є підписка спільною.</param>
 /// <param name="MonthlyLimit">Місячний ліміт витрат у валюті підписки або null.</param>
 public sealed record UpdateSubscriptionDto(
     [Required(ErrorMessage = "Назва є обов'язковою.")]
@@ -133,6 +138,7 @@ public sealed record UpdateSubscriptionDto(
     int RemindDaysBefore,
     [StringLength(500, ErrorMessage = "Нотатка — не більше 500 символів.")]
     string? Notes = null,
+    bool IsShared = false,
     [Range(typeof(decimal), "0.01", "1000000", ParseLimitsInInvariantCulture = true, ConvertValueInInvariantCulture = true,
         ErrorMessage = "Місячний ліміт має бути від 0.01 до 1 000 000.")]
     decimal? MonthlyLimit = null);

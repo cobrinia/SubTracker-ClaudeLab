@@ -59,6 +59,11 @@ public sealed class SubscriptionConfiguration : IEntityTypeConfiguration<Subscri
         builder.Property(s => s.Notes)
             .HasMaxLength(500);
 
+        // Спільна підписка: bit NOT NULL DEFAULT 0 (міграція AddIsShared).
+        // DEFAULT потрібен і для INSERT з ADO.NET, де цей стовпець не вказано.
+        builder.Property(s => s.IsShared)
+            .HasDefaultValue(false);
+
         // Місячний ліміт витрат: decimal(18,2) NULL (міграція AddMonthlyLimit).
         builder.Property(s => s.MonthlyLimit)
             .HasPrecision(18, 2);

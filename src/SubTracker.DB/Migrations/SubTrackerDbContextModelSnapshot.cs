@@ -202,6 +202,11 @@ namespace SubTracker.DB.Migrations
                     b.Property<DateOnly?>("EndDate")
                         .HasColumnType("date");
 
+                    b.Property<bool>("IsShared")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<decimal?>("MonthlyLimit")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");

@@ -50,6 +50,9 @@ public class Subscription
     /// <summary>Довільна нотатка (до 500 символів); null — нотатки немає.</summary>
     public string? Notes { get; set; }
 
+    /// <summary>Ознака спільної підписки.</summary>
+    public bool IsShared { get; set; } = false;
+
     /// <summary>Місячний ліміт витрат у валюті підписки; null — ліміту немає.</summary>
     public decimal? MonthlyLimit { get; set; }
 

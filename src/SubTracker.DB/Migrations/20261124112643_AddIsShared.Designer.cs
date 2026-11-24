@@ -12,8 +12,8 @@ using SubTracker.DB;
 namespace SubTracker.DB.Migrations
 {
     [DbContext(typeof(SubTrackerDbContext))]
-    [Migration("20261124114814_AddMonthlyLimit")]
-    partial class AddMonthlyLimit
+    [Migration("20261124112643_AddIsShared")]
+    partial class AddIsShared
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -205,9 +205,10 @@ namespace SubTracker.DB.Migrations
                     b.Property<DateOnly?>("EndDate")
                         .HasColumnType("date");
 
-                    b.Property<decimal?>("MonthlyLimit")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<bool>("IsShared")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Name")
                         .IsRequired()
