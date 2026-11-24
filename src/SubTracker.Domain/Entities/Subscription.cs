@@ -47,6 +47,9 @@ public class Subscription
     /// <summary>За скільки днів до списання нагадувати.</summary>
     public int RemindDaysBefore { get; set; } = 3;
 
+    /// <summary>Довільна нотатка (до 500 символів); null — нотатки немає.</summary>
+    public string? Notes { get; set; }
+
     /// <summary>
     /// Concurrency token (SQL Server rowversion). Змінюється автоматично при кожному UPDATE
     /// і використовується для оптимістичної конкуренції.

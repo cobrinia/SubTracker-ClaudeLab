@@ -55,6 +55,10 @@ public sealed class SubscriptionConfiguration : IEntityTypeConfiguration<Subscri
         builder.HasIndex(s => new { s.Status, s.NextChargeDate })
             .HasDatabaseName("IX_Subscriptions_Status_NextChargeDate");
 
+        // Необов'язкова нотатка: nvarchar(500) NULL (міграція AddSubscriptionNotes).
+        builder.Property(s => s.Notes)
+            .HasMaxLength(500);
+
         // Concurrency token: SQL Server сам змінює rowversion при кожному UPDATE,
         // а EF Core додає його у WHERE під час UPDATE/DELETE.
         builder.Property(s => s.RowVersion)
