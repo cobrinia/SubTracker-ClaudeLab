@@ -50,6 +50,9 @@ public class Subscription
     /// <summary>Довільна нотатка (до 500 символів); null — нотатки немає.</summary>
     public string? Notes { get; set; }
 
+    /// <summary>Місячний ліміт витрат у валюті підписки; null — ліміту немає.</summary>
+    public decimal? MonthlyLimit { get; set; }
+
     /// <summary>
     /// Concurrency token (SQL Server rowversion). Змінюється автоматично при кожному UPDATE
     /// і використовується для оптимістичної конкуренції.

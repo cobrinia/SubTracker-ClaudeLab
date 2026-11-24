@@ -59,6 +59,10 @@ public sealed class SubscriptionConfiguration : IEntityTypeConfiguration<Subscri
         builder.Property(s => s.Notes)
             .HasMaxLength(500);
 
+        // Місячний ліміт витрат: decimal(18,2) NULL (міграція AddMonthlyLimit).
+        builder.Property(s => s.MonthlyLimit)
+            .HasPrecision(18, 2);
+
         // Concurrency token: SQL Server сам змінює rowversion при кожному UPDATE,
         // а EF Core додає його у WHERE під час UPDATE/DELETE.
         builder.Property(s => s.RowVersion)

@@ -21,6 +21,7 @@ namespace SubTracker.Api.Contracts;
 /// <param name="Status">Статус підписки.</param>
 /// <param name="RemindDaysBefore">За скільки днів нагадувати.</param>
 /// <param name="Notes">Нотатка до 500 символів або null.</param>
+/// <param name="MonthlyLimit">Місячний ліміт витрат у валюті підписки або null.</param>
 public sealed record SubscriptionDto(
     int Id,
     string Name,
@@ -38,7 +39,8 @@ public sealed record SubscriptionDto(
     DateOnly? TrialEndDate,
     SubscriptionStatus Status,
     int RemindDaysBefore,
-    string? Notes);
+    string? Notes,
+    decimal? MonthlyLimit);
 
 /// <summary>Учасник спільної підписки.</summary>
 /// <param name="UserId">Ідентифікатор користувача.</param>
@@ -69,6 +71,7 @@ public sealed record SubscriptionDetailsDto(
 /// <param name="TrialEndDate">Кінець пробного періоду або null.</param>
 /// <param name="RemindDaysBefore">За скільки днів нагадувати, 0–30.</param>
 /// <param name="Notes">Нотатка до 500 символів або null.</param>
+/// <param name="MonthlyLimit">Місячний ліміт витрат у валюті підписки або null.</param>
 public sealed record CreateSubscriptionDto(
     [Required(ErrorMessage = "Назва є обов'язковою.")]
     [StringLength(100, MinimumLength = 2, ErrorMessage = "Назва має містити від 2 до 100 символів.")]
@@ -90,7 +93,10 @@ public sealed record CreateSubscriptionDto(
     [Range(0, 30, ErrorMessage = "Нагадування — від 0 до 30 днів.")]
     int RemindDaysBefore = 3,
     [StringLength(500, ErrorMessage = "Нотатка — не більше 500 символів.")]
-    string? Notes = null);
+    string? Notes = null,
+    [Range(typeof(decimal), "0.01", "1000000", ParseLimitsInInvariantCulture = true, ConvertValueInInvariantCulture = true,
+        ErrorMessage = "Місячний ліміт має бути від 0.01 до 1 000 000.")]
+    decimal? MonthlyLimit = null);
 
 /// <summary>Дані для повної заміни підписки (PUT). Статус змінюється окремо (PATCH .../status).</summary>
 /// <param name="Name">Назва сервісу, 2–100 символів.</param>
@@ -104,6 +110,7 @@ public sealed record CreateSubscriptionDto(
 /// <param name="TrialEndDate">Кінець пробного періоду або null.</param>
 /// <param name="RemindDaysBefore">За скільки днів нагадувати, 0–30.</param>
 /// <param name="Notes">Нотатка до 500 символів або null.</param>
+/// <param name="MonthlyLimit">Місячний ліміт витрат у валюті підписки або null.</param>
 public sealed record UpdateSubscriptionDto(
     [Required(ErrorMessage = "Назва є обов'язковою.")]
     [StringLength(100, MinimumLength = 2, ErrorMessage = "Назва має містити від 2 до 100 символів.")]
@@ -125,7 +132,10 @@ public sealed record UpdateSubscriptionDto(
     [Range(0, 30, ErrorMessage = "Нагадування — від 0 до 30 днів.")]
     int RemindDaysBefore,
     [StringLength(500, ErrorMessage = "Нотатка — не більше 500 символів.")]
-    string? Notes = null);
+    string? Notes = null,
+    [Range(typeof(decimal), "0.01", "1000000", ParseLimitsInInvariantCulture = true, ConvertValueInInvariantCulture = true,
+        ErrorMessage = "Місячний ліміт має бути від 0.01 до 1 000 000.")]
+    decimal? MonthlyLimit = null);
 
 /// <summary>Зміна статусу підписки (PATCH).</summary>
 /// <param name="Status">Новий статус: Active, Paused або Cancelled.</param>
